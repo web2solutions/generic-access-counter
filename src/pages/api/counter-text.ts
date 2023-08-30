@@ -53,5 +53,5 @@ export default async function handler(
   context.fillText(`You are the visitor #${counter} since ${since}`, 200, 20);
   
   const dataURL = await canvas.toDataURL("image/png");
-  res.status(200).send(dataURL)
+  res.status(200).send(`<img src="${dataURL}" />`)
 }
