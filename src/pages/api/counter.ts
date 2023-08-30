@@ -2,7 +2,7 @@
 import { kv } from "@vercel/kv";
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { createCanvas } from 'canvas';
+import { createCanvas } from '@napi-rs/canvas';
 
 
 const width = 1200;
