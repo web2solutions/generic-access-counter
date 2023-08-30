@@ -12,7 +12,7 @@ type Data = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<string>
+  res: NextApiResponse<Buffer>
 ) {
   const cache = await kv.get('counter');
   
@@ -53,5 +53,6 @@ export default async function handler(
   context.fillText(`You are the visitor #${counter} since ${since}`, 200, 20);
   
   const dataURL = await canvas.toDataURL("image/png");
-  res.status(200).send(`<img src="${dataURL}" />`)
+  const buffer = await canvas.toBuffer('image/jpeg')
+  res.status(200).send(buffer)
 }
