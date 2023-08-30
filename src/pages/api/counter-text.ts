@@ -36,10 +36,11 @@ export default async function handler(
 
   context.fillStyle = "#764abc";
   context.fillRect(0, 0, width, height);
-  context.font = "11pt 'Arial'";
-  context.textAlign = "center";
+  context.font = "9pt 'Arial'";
+  context.textAlign = "left";
   context.fillStyle = "#fff";
-  context.fillText(`You are the visitor #${counter} since ${since}`, 200, 20);
+  context.fillText(`You are the visitor #${counter} since ${since}`, 150, 5);
+  context.fillText(`Counter made with vercel serverless`, 170, 5);
   
   const buffer = await canvas.toBuffer('image/jpeg')
   res.status(200).setHeader('Content-Type', 'image/jpeg').send(buffer)
