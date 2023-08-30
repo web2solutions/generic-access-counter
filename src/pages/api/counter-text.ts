@@ -54,5 +54,5 @@ export default async function handler(
   
   const dataURL = await canvas.toDataURL("image/png");
   const buffer = await canvas.toBuffer('image/jpeg')
-  res.status(200).send(buffer)
+  res.status(200).setHeader('Content-Type', 'image/jpeg').send(buffer)
 }
