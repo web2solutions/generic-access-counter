@@ -45,7 +45,7 @@ export default async function handler(
   context.fillRect(0, 0, width, height);
 
   // Set the style of the test and render it to the canvas
-  context.font = "bold 12pt 'PT Arial'";
+  context.font = "bold 10pt 'Arial'";
   context.textAlign = "center";
   context.fillStyle = "#fff";
   // 600 is the x value (the center of the image)
