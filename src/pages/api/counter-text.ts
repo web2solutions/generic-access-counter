@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { kv } from "@vercel/kv";
 import type { NextApiRequest, NextApiResponse } from 'next';
 
