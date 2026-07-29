@@ -1,6 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 
@@ -11,11 +10,11 @@ type IAPIResponse = string;
  
 export const getServerSideProps: GetServerSideProps<{
   apiResponse: IAPIResponse
-}> = async () => {
-  const res = await fetch('https://generic-access-counter.vercel.app/api/counter-text')
-  console.log(res)
+}> = async ({ req }) => {
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3000'
+  const protocol = (req.headers['x-forwarded-proto'] as string) || 'http'
+  const res = await fetch(`${protocol}://${host}/api/counter-text`)
   const apiResponse = await res.text();
-  console.log(apiResponse)
   return { props: { apiResponse } }
 } 
 

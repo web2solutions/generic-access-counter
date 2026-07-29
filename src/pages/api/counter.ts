@@ -1,49 +1,40 @@
-import { kv } from "@vercel/kv";
-import type { NextApiRequest, NextApiResponse } from 'next';
-
-import { createCanvas } from '@napi-rs/canvas';
-
+import { Redis } from "@upstash/redis";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  counter: number,
-  dataURL: string,
+  counter: number;
+  since: string;
+};
+
+function getRedis() {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    throw new Error("Missing Redis REST credentials");
+  }
+  return new Redis({ url, token });
 }
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data | string>
 ) {
-  const cache = await kv.get('counter');
-  
-  
-  let counter: number = +(cache || 0);
-  counter += 1;
-  await kv.set('counter', counter);
+  try {
+    const redis = getRedis();
+    const counter = await redis.incr("counter");
 
+    let since = await redis.get<string>("sinceDate");
+    if (!since) {
+      since = new Date().toLocaleString();
+      await redis.set("sinceDate", since);
+    }
 
-  let cacheDate = await kv.get('sinceDate');
-  let now = (new Date()).toLocaleString();
-
-  if(!!!cacheDate) {
-    await kv.set('sinceDate', now);
+    res
+      .status(200)
+      .setHeader("Cache-Control", "no-store")
+      .json({ counter, since });
+  } catch (error) {
+    console.error(error);
+    res.status(500).setHeader("Content-Type", "text/plain").send("Internal Server Error");
   }
-  let since = await kv.get('sinceDate');
-
-  const width = 400;
-  const height = 40;
-
-  const canvas = createCanvas(width, height);
-  const context = canvas.getContext("2d");
-
-  context.fillStyle = "#764abc";
-  context.fillRect(0, 0, width, height);
-
-  context.font = "bold 12pt 'PT Arial'";
-  context.textAlign = "center";
-  context.fillStyle = "#fff";
-
-  context.fillText(`You are the visitor #${counter} since ${since}`, 200, 20);
-  
-  const dataURL = await canvas.toDataURL("image/png");
-  res.status(200).json({ counter, dataURL })
 }
